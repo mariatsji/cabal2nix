@@ -149,7 +149,6 @@ hooks =
   , ("mysql", set (libraryDepends . system . contains (pkg "libmysqlclient")) True)
   , ("network-attoparsec", set doCheck False) -- test suite requires network access
   , ("numeric-qq", set doCheck False) -- test suite doesn't finish even after 1+ days
-  , ("opencv", opencvOverrides)
   , ("pandoc >= 1.16.0.2 && < 2.5", set doCheck False) -- https://github.com/jgm/pandoc/issues/2709 and https://github.com/fpco/stackage/issues/1332
   , ("pandoc < 2.6", pandocPre26Overrides)
   , ("pandoc >= 2.6", pandocOverrides)
@@ -353,10 +352,6 @@ hfseventsOverrides
   . set (libraryDepends . tool . contains (bind "pkgs.darwin.apple_sdk.frameworks.CoreServices")) True
   . set (libraryDepends . system . contains (bind "pkgs.darwin.apple_sdk.frameworks.Cocoa")) True
   . over (libraryDepends . haskell) (Set.union (Set.fromList (map bind ["self.base", "self.cereal", "self.mtl", "self.text", "self.bytestring"])))
-
-opencvOverrides :: Derivation -> Derivation
-opencvOverrides = set phaseOverrides "hardeningDisable = [ \"bindnow\" ];"
-                . over (libraryDepends . pkgconfig) (replace (pkg "opencv") (pkg "opencv3"))
 
 hspecCoreOverrides :: Derivation -> Derivation   -- https://github.com/hspec/hspec/issues/330
 hspecCoreOverrides = set phaseOverrides "testTarget = \"--test-option=--skip --test-option='Test.Hspec.Core.Runner.hspecResult runs specs in parallel'\";"
